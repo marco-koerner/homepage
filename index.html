@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Marco K&ouml;rner &ndash; Forschung sichtbar machen</title>
+    <meta name="description" content="Ich helfe Forschenden, ihre Ergebnisse sichtbar zu machen. Gedanken zu Medienarbeit, Sichtbarkeit und wie gute Forschung die &Ouml;ffentlichkeit erreicht.">
+    <style>
+        /* ═══════════════════════════
+           LOKALE SCHRIFT
+           Dateien liegen im Ordner /fonts/
+           ═══════════════════════════ */
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url('fonts/inter-latin-ext-400-normal.woff2') format('woff2');
+            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+        }
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url('fonts/inter-latin-400-normal.woff2') format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 500;
+            font-display: swap;
+            src: url('fonts/inter-latin-ext-500-normal.woff2') format('woff2');
+            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+        }
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 500;
+            font-display: swap;
+            src: url('fonts/inter-latin-500-normal.woff2') format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 600;
+            font-display: swap;
+            src: url('fonts/inter-latin-ext-600-normal.woff2') format('woff2');
+            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+        }
+        @font-face {
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 600;
+            font-display: swap;
+            src: url('fonts/inter-latin-600-normal.woff2') format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+
+        /* ═══════════════════════════
+           VARIABLEN
+           ═══════════════════════════ */
+        :root {
+            --dark: #2D2D2D;
+            --light: #F5F5F5;
+            --white: #ffffff;
+            --bg-body: #FAFAFA;
+            --text-body: #3a3a3a;
+            --text-secondary: #6b6b6b;
+            --text-muted: #999999;
+            --border: rgba(0, 0, 0, 0.08);
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-body);
+            font-family: var(--font);
+            font-weight: 400;
+            line-height: 1.7;
+            font-size: 16px;
+        }
+
+        .container {
+            max-width: 660px;
+            margin: 0 auto;
+            padding: 0 28px;
+        }
+
+        /* ═══════════════════════════
+           HERO
+           ═══════════════════════════ */
+        .hero {
+            background-color: var(--dark);
+            color: var(--light);
+            padding: 80px 0 72px;
+        }
+
+        .hero-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 36px;
+        }
+
+        .hero-photo {
+            width: 112px;
+            height: 112px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: center 15%;
+            border: 2px solid rgba(245, 245, 245, 0.15);
+            opacity: 0;
+            animation: fadeUp 0.7s ease forwards;
+        }
+
+        .hero-text {
+            opacity: 0;
+            animation: fadeUp 0.7s ease 0.12s forwards;
+        }
+
+        .hero-name {
+            font-weight: 500;
+            font-size: 14px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: rgba(245, 245, 245, 0.6);
+            margin-bottom: 16px;
+        }
+
+        .hero-claim {
+            font-weight: 600;
+            font-size: clamp(28px, 5vw, 40px);
+            line-height: 1.25;
+            letter-spacing: -0.02em;
+            color: var(--light);
+            max-width: 480px;
+        }
+
+        .hero-sub {
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: 400;
+            color: rgba(245, 245, 245, 0.6);
+            max-width: 460px;
+            line-height: 1.75;
+        }
+
+        /* ═══════════════════════════
+           SECTIONS
+           ═══════════════════════════ */
+        .section {
+            padding: 64px 0;
+        }
+
+        .section + .section {
+            border-top: 1px solid var(--border);
+        }
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .about-text {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            max-width: 560px;
+        }
+
+        .about-text p + p {
+            margin-top: 14px;
+        }
+
+        /* ═══════════════════════════
+           KONTAKT
+           ═══════════════════════════ */
+        .contact-block {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .contact-text {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.75;
+            max-width: 480px;
+        }
+
+        .contact-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .contact-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--dark);
+            color: var(--light);
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+            transition: opacity 0.2s ease;
+        }
+
+        .contact-link:hover {
+            opacity: 0.8;
+        }
+
+        .contact-link svg {
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0;
+        }
+
+        /* ═══════════════════════════
+           RECHTLICHES
+           ═══════════════════════════ */
+        .legal {
+            padding: 64px 0 64px;
+            border-top: 1px solid var(--border);
+        }
+
+        .legal-block + .legal-block {
+            margin-top: 48px;
+        }
+
+        .legal-title {
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-body);
+            margin-bottom: 16px;
+        }
+
+        .legal-content p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.75;
+            margin-bottom: 4px;
+        }
+
+        .legal-content h3 {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-body);
+            margin-top: 20px;
+            margin-bottom: 6px;
+        }
+
+        .legal-content a {
+            color: var(--text-body);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        .legal-content a:hover {
+            color: var(--dark);
+        }
+
+        /* ═══════════════════════════
+           ANIMATIONEN
+           ═══════════════════════════ */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ═══════════════════════════
+           RESPONSIVE
+           ═══════════════════════════ */
+        @media (max-width: 600px) {
+            .hero { padding: 64px 0 56px; }
+            .hero-photo { width: 88px; height: 88px; }
+            .section { padding: 48px 0; }
+            .legal { padding: 48px 0 0; }
+            .contact-links { flex-direction: column; }
+            .contact-link { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ═══ HERO ═══ -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-inner">
+                <!-- FOTO: Ersetze "foto.jpg" oder l&ouml;sche die Zeile -->
+                <img src="foto.jpg" alt="Dr. Marco K&ouml;rner" class="hero-photo">
+                <div class="hero-text">
+                    <p class="hero-name">Dr. Marco K&ouml;rner</p>
+                    <h1 class="hero-claim">Forschung sichtbar machen.</h1>
+                    <p class="hero-sub">Ich arbeite in der Hochschulkommunikation und helfe Forschenden, mit ihren Ergebnissen die &Ouml;ffentlichkeit zu erreichen &ndash; &uuml;ber Medien, Interviews und die richtigen Geschichten.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ WAS ICH MACHE ═══ -->
+    <section class="section fade-in">
+        <div class="container">
+            <p class="section-label">Was ich mache</p>
+            <div class="about-text">
+                <p>Gute Forschung verdient es, geh&ouml;rt zu werden. Aber der Weg vom Paper in die &Ouml;ffentlichkeit ist selten offensichtlich. Ich begleite Forschende dabei &ndash; von der ersten Idee bis zum fertigen Interview.</p>
+                <p>Dabei geht es nicht um Marketing oder Selbstdarstellung, sondern darum, Ergebnisse so zu erz&auml;hlen, dass sie verstanden werden. Von Journalist*innen, von der &Ouml;ffentlichkeit, und manchmal auch von Kolleg*innen aus dem Nachbarfach.</p>
+                <p>Auf LinkedIn und Bluesky teile ich, was mir im Alltag auff&auml;llt: Was funktioniert, wenn Forschende mit Medien sprechen? Was &uuml;berrascht? Und warum manche Papers in der Tagesschau landen &ndash; und andere nicht.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ KONTAKT ═══ -->
+    <section class="section fade-in">
+        <div class="container">
+            <p class="section-label">Kontakt</p>
+            <div class="contact-block">
+                <p class="contact-text">Du hast ein Paper ver&ouml;ffentlicht und willst, dass es wahrgenommen wird? Du bereitest dich auf ein Interview vor? Oder du willst einfach mal reden, wie das mit der Sichtbarkeit funktioniert? Schreib mir.</p>
+                <div class="contact-links">
+                    <!-- E-MAIL: Ersetze mit deiner Adresse -->
+                    <a href="mailto:mail@marcokoerner.com" class="contact-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                        E-Mail
+                    </a>
+                    <!-- LINKEDIN: Ersetze mit deiner URL -->
+                    <a href="https://www.linkedin.com/in/DEIN-PROFIL" class="contact-link" target="_blank" rel="noopener">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                        LinkedIn
+                    </a>
+                    <a href="https://bsky.app/profile/marcokoerner.bsky.social" class="contact-link" target="_blank" rel="noopener">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c-2.5 2.5-5 5.5-5 8.5a5 5 0 0 0 5 5 5 5 0 0 0 5-5c0-3-2.5-6-5-8.5z"/></svg>
+                        Bluesky
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ IMPRESSUM & DATENSCHUTZ ═══ -->
+    <section class="legal fade-in" id="impressum">
+        <div class="container">
+
+            <!-- IMPRESSUM -->
+            <div class="legal-block">
+                <h2 class="legal-title">Impressum</h2>
+                <div class="legal-content">
+                    <h3>Angaben gem&auml;&szlig; &sect; 5 DDG</h3>
+                    <!-- Ersetze [Platzhalter] mit deinen Daten -->
+                    <p>Dr. Marco K&ouml;rner<br>
+                    [Stra&szlig;e und Hausnummer]<br>
+                    [PLZ Ort]</p>
+                    <p>E-Mail: [deine@email.de]</p>
+
+                    <h3>Verantwortlich f&uuml;r den Inhalt gem&auml;&szlig; &sect; 18 Abs. 2 MStV</h3>
+                    <p>Dr. Marco K&ouml;rner<br>
+                    [Stra&szlig;e und Hausnummer]<br>
+                    [PLZ Ort]</p>
+                </div>
+            </div>
+
+            <!-- DATENSCHUTZ -->
+            <div class="legal-block" id="datenschutz">
+                <h2 class="legal-title">Datenschutz</h2>
+                <div class="legal-content">
+                    <h3>Verantwortlicher</h3>
+                    <p>Dr. Marco K&ouml;rner<br>
+                    [Stra&szlig;e und Hausnummer]<br>
+                    [PLZ Ort]<br>
+                    E-Mail: [deine@email.de]</p>
+
+                    <h3>Hosting</h3>
+                    <p>Diese Website wird bei STRATO AG, Pascalstra&szlig;e 10, 10587 Berlin, gehostet (Server in Deutschland). Beim Aufruf erhebt der Hoster automatisch technische Daten in Server-Logfiles (IP-Adresse, Zeitpunkt, abgerufene Datei, Browser). Diese Daten dienen ausschlie&szlig;lich dem sicheren Betrieb und werden nicht mit anderen Datenquellen zusammengef&uuml;hrt. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO.</p>
+
+                    <h3>Keine Cookies, kein Tracking</h3>
+                    <p>Diese Website verwendet keine Cookies, keine Analyse-Tools und kein Tracking. Es werden keine personenbezogenen Daten &uuml;ber das technisch notwendige Ma&szlig; hinaus erhoben.</p>
+
+                    <h3>E-Mail-Kontakt</h3>
+                    <p>Wenn Sie per E-Mail Kontakt aufnehmen, werden Ihre Daten zur Bearbeitung der Anfrage gespeichert. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO. L&ouml;schung auf Anfrage, sofern keine Aufbewahrungspflichten bestehen.</p>
+
+                    <h3>Ihre Rechte</h3>
+                    <p>Sie haben Recht auf Auskunft, Berichtigung, L&ouml;schung, Einschr&auml;nkung, Widerspruch und Daten&uuml;bertragbarkeit (Art. 15&ndash;21 DSGVO) sowie ein Beschwerderecht bei einer Aufsichtsbeh&ouml;rde.</p>
+
+                    <p>Stand: Februar 2026</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ═══ SCROLL-ANIMATION ═══ -->
+    <script>
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in').forEach(function(el) {
+            observer.observe(el);
+        });
+    </script>
+
+</body>
+</html>
