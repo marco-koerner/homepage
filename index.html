@@ -55,6 +55,9 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--hell);outline-offse
 /* ── Kopf ───────────────────────────────────────────────── */
 .kopf{background:var(--tief);color:var(--papier);
   padding:88px 0 76px;border-bottom:10px solid var(--hell);}
+.kopf-foto{width:104px;height:104px;border-radius:50%;object-fit:cover;
+  display:block;margin-bottom:28px;
+  border:2px solid rgba(255,255,255,.18);}
 .kopf-name{font-size:15px;font-weight:500;color:rgba(255,255,255,.62);
   margin-bottom:14px;letter-spacing:.01em;}
 .kopf-claim{font-size:clamp(30px,5.6vw,44px);font-weight:600;
@@ -100,6 +103,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--hell);outline-offse
 
 @media (max-width:600px){
   .kopf{padding:64px 0 56px;border-bottom-width:7px;}
+  .kopf-foto{width:84px;height:84px;margin-bottom:22px;}
   .teil{padding:44px 0;}
   .weg li{grid-template-columns:1fr;gap:2px;}
   .wege{flex-direction:column;}
@@ -111,6 +115,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--hell);outline-offse
 
 <header class="kopf">
   <div class="spalte">
+    <img src="foto.jpg" alt="Porträt von Marco Körner" class="kopf-foto" width="104" height="104">
     <p class="kopf-name">Dr. Marco Körner</p>
     <h1 class="kopf-claim">Forschung sichtbar machen.</h1>
     <p class="kopf-sub">Hochschulkommunikation an einer Volluniversität: Kanalstrategie,
@@ -190,6 +195,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--hell);outline-offse
     <div class="block">
       <h2>Impressum</h2>
       <h3>Angaben gemäß § 5 DDG</h3>
+      <!-- ZU PRÜFEN: ladungsfähige Anschrift. Die bisherige Angabe
+           (Leutragraben 1, 07743 Jena) ist nicht die Wohnanschrift. -->
       <p>Dr. Marco Körner<br>
         Ernst-Kohl-Straße 19<br>
         99423 Weimar</p>
@@ -204,13 +211,14 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--hell);outline-offse
       <p>Dr. Marco Körner, Anschrift wie oben, mail@marcokoerner.com</p>
 
       <h3>Hosting</h3>
-      <p>Diese Website wird über GitHub Pages ausgeliefert, einen Dienst der GitHub B.V., Vijzelstraat 68–72, 1017 HL
+      <p>Diese Website wird über GitHub Pages
+        ausgeliefert, einen Dienst der GitHub B.V., Vijzelstraat 68–72, 1017 HL
         Amsterdam, Niederlande, einer Tochtergesellschaft der GitHub Inc., USA.
         Beim Aufruf verarbeitet GitHub technische Zugriffsdaten, darunter die
         IP-Adresse. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Eine
         Übermittlung in die USA wird auf Grundlage der Standardvertragsklauseln
         und des EU-US Data Privacy Framework abgesichert.</p>
- 
+
       <h3>Keine Einwilligungsbanner, keine Auswertung</h3>
       <p>Diese Website setzt keine Cookies, nutzt keine Analysewerkzeuge und bindet
         keine externen Inhalte ein. Die verwendete Schrift liegt auf demselben
