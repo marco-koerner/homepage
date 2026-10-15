@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phrasenmäher – Dr. Marco Körner</title>
+<meta name="description" content="Der Phrasenmäher markiert, was einen Text glatt wirken lässt: Floskeln, Wendungen, Muster, Rhythmus. Läuft im Browser, der Text wird nicht übertragen.">
+<meta name="robots" content="index, follow">
+
+<style>
+<style>
+/* ── Schrift: IBM Plex Sans, selbst gehostet ─────────────────
+   Dateien im Ordner /fonts/ ablegen. Bezug:
+   github.com/IBM/plex – ibm-plex-sans, Ordner fonts/complete/woff2
+   Benötigt: Regular (400), Medium (500), SemiBold (600), latin + latin-ext
+   ────────────────────────────────────────────────────────── */
+@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:400;font-display:swap;
+  src:url('../fonts/ibm-plex-sans-latin-400-normal.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212,U+FEFF,U+FFFD;}
+@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:400;font-display:swap;
+  src:url('../fonts/ibm-plex-sans-latin-ext-400-normal.woff2') format('woff2');
+  unicode-range:U+0100-02BA,U+1E00-1E9F,U+2020,U+20A0-20AB,U+2113,U+A720-A7FF;}
+@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:500;font-display:swap;
+  src:url('../fonts/ibm-plex-sans-latin-500-normal.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212,U+FEFF,U+FFFD;}
+@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:500;font-display:swap;
+  src:url('../fonts/ibm-plex-sans-latin-ext-500-normal.woff2') format('woff2');
+  unicode-range:U+0100-02BA,U+1E00-1E9F,U+2020,U+20A0-20AB,U+2113,U+A720-A7FF;}
+@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:600;font-display:swap;
+  src:url('../fonts/ibm-plex-sans-latin-600-normal.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212,U+FEFF,U+FFFD;}
+@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:600;font-display:swap;
+  src:url('../fonts/ibm-plex-sans-latin-ext-600-normal.woff2') format('woff2');
+  unicode-range:U+0100-02BA,U+1E00-1E9F,U+2020,U+20A0-20AB,U+2113,U+A720-A7FF;}
+
+:root{
+  --tief:#1B365D;
+  --hell:#7F9CC4;
+  --papier:#FFFFFF;
+  --grund:#F7F8FA;
+  --text:#22262C;
+  --text-leise:#5A626D;
+  --kante:#E2E6EC;
+  --schrift:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --m-floskel:#FFE1A8;
+  --m-wendung:#FFC9C9;
+  --m-muster:#D7C8F5;
+  --m-typografie:#CFE6FF;
+  --m-absatzbau:#D9EFD3;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+body{background:var(--grund);color:var(--text);font-family:var(--schrift);
+  font-weight:400;font-size:17px;line-height:1.65;}
+.spalte{max-width:640px;margin:0 auto;padding:0 28px;}
+a{color:var(--text);text-decoration:underline;text-underline-offset:2px;}
+a:focus-visible,button:focus-visible,textarea:focus-visible{outline:2px solid var(--hell);outline-offset:3px;}
+
+.kopf{background:var(--tief);color:var(--papier);padding:56px 0 48px;border-bottom:10px solid var(--hell);}
+.kopf-name{font-size:15px;font-weight:500;color:rgba(255,255,255,.62);margin-bottom:14px;}
+.kopf-name a{color:inherit;text-decoration:none;}
+.kopf-name a:hover{text-decoration:underline;}
+.kopf-claim{font-size:clamp(30px,5.6vw,44px);font-weight:600;line-height:1.16;letter-spacing:-.02em;}
+.kopf-sub{margin-top:20px;font-size:17px;color:rgba(255,255,255,.72);max-width:34em;line-height:1.7;}
+
+.teil{padding:48px 0;}
+.teil + .teil{border-top:1px solid var(--kante);}
+.teil h2{font-size:15px;font-weight:600;color:var(--text-leise);margin-bottom:18px;}
+.fliess{max-width:34em;}
+.fliess p + p{margin-top:16px;}
+.leise{color:var(--text-leise);font-size:15px;}
+
+textarea{width:100%;min-height:220px;padding:14px 16px;font:inherit;font-size:16px;line-height:1.6;
+  color:var(--text);background:var(--papier);border:1px solid var(--kante);border-radius:4px;resize:vertical;}
+.knoepfe{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center;}
+button{font:inherit;font-size:15px;font-weight:500;padding:11px 20px;border-radius:4px;cursor:pointer;border:1px solid var(--tief);}
+.primaer{background:var(--tief);color:var(--papier);}
+.primaer:hover{background:#15294a;}
+.sekundaer{background:var(--papier);color:var(--tief);}
+.sekundaer:hover{background:var(--grund);}
+
+.ergebnis{margin-top:36px;display:none;}
+.ergebnis.sichtbar{display:block;}
+.kennzahlen{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:28px;}
+.kz{background:var(--papier);border:1px solid var(--kante);border-radius:4px;padding:12px 14px;}
+.kz b{display:block;font-size:22px;font-weight:600;line-height:1.2;}
+.kz span{display:block;font-size:13px;color:var(--text-leise);margin-top:4px;line-height:1.4;}
+.kz.dichte{grid-column:1/-1;}
+.kz.dichte b{font-size:18px;}
+.markiert{background:var(--papier);border:1px solid var(--kante);border-radius:4px;padding:16px 18px;
+  white-space:pre-wrap;overflow-wrap:anywhere;font-size:16px;line-height:1.7;}
+mark{padding:1px 2px;border-radius:2px;color:inherit;}
+.k-floskel{background:var(--m-floskel);}
+.k-wendung{background:var(--m-wendung);}
+.k-muster{background:var(--m-muster);}
+.k-typografie{background:var(--m-typografie);}
+.k-absatzbau{background:var(--m-absatzbau);}
+.legende{display:flex;flex-wrap:wrap;gap:8px 16px;margin:10px 0 24px;font-size:14px;color:var(--text-leise);}
+.legende i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px;}
+.funde{list-style:none;}
+.funde li{display:grid;grid-template-columns:4.5em 1fr;gap:12px;padding:9px 0;border-top:1px solid var(--kante);font-size:15px;}
+.funde li:first-child{border-top:none;}
+.funde .z{color:var(--text-leise);font-variant-numeric:tabular-nums;}
+.funde .kat{color:var(--text-leise);}
+.hinweis{margin-top:18px;font-size:15px;color:var(--text-leise);}
+h3{font-size:15px;font-weight:600;margin:28px 0 10px;}
+
+.recht{background:var(--papier);border-top:1px solid var(--kante);padding:40px 0 48px;}
+.recht p{font-size:15px;color:var(--text-leise);line-height:1.7;}
+
+@media (max-width:600px){
+  .kopf{padding:40px 0 32px;border-bottom-width:7px;}
+  .teil{padding:40px 0;}
+  .funde li{grid-template-columns:1fr;gap:2px;}
+  .knoepfe button{width:100%;}
+}
+</style>
+</head>
+<body>
+
+<header class="kopf">
+  <div class="spalte">
+    <p class="kopf-name"><a href="../">Dr. Marco Körner</a></p>
+    <h1 class="kopf-claim">Phrasenmäher.</h1>
+    <p class="kopf-sub">Markiert, was einen Text glatt wirken lässt: Floskeln, Wendungen, Muster, Rhythmus.
+      Läuft hier im Browser; der Text wird nirgendwohin übertragen.</p>
+  </div>
+</header>
+
+<main>
+
+<section class="teil">
+  <div class="spalte">
+    <h2>Text prüfen</h2>
+    <label for="text" class="leise" style="display:block;margin-bottom:8px">Text einfügen, zum Beispiel einen LinkedIn-Post oder eine Pressemitteilung.</label>
+    <textarea id="text" spellcheck="false"></textarea>
+    <div class="knoepfe">
+      <button type="button" class="primaer" id="pruefen">Prüfen</button>
+      <button type="button" class="sekundaer" id="beispiel">Beispiel einfügen</button>
+      <span class="leise" id="stand"></span>
+    </div>
+
+    <div class="ergebnis" id="ergebnis" aria-live="polite">
+      <div class="kennzahlen" id="kennzahlen"></div>
+      <div class="legende">
+        <span><i style="background:var(--m-floskel)"></i>Floskel</span>
+        <span><i style="background:var(--m-wendung)"></i>Wendung</span>
+        <span><i style="background:var(--m-muster)"></i>Muster</span>
+        <span><i style="background:var(--m-typografie)"></i>Typografie</span>
+        <span><i style="background:var(--m-absatzbau)"></i>Absatzbau</span>
+      </div>
+      <div class="markiert" id="markiert"></div>
+      <h3>Fundstellen</h3>
+      <ul class="funde" id="funde"></ul>
+      <p class="hinweis">Kein Urteil über die Herkunft. Jedes Merkmal kommt auch in von Menschen geschriebenen Texten vor,
+        der Gedankenstrich ist korrekte Typografie. Es zählt die Häufung, und ob eine Stelle stehen bleibt, entscheidet,
+        wer den Text geschrieben hat.</p>
+    </div>
+  </div>
+</section>
+
+<section class="teil">
+  <div class="spalte">
+    <h2>Wie es funktioniert</h2>
+    <div class="fliess">
+      <p>Glätte ist der Eindruck, dass ein Text aus Formeln besteht statt aus Gedanken. Viele halten ihn dann
+        für KI-geschrieben; genauso gut ist es PR-Sprech oder LinkedIn-Routine von Menschen. Der Phrasenmäher
+        unterscheidet das nicht. Er findet die Formeln.</p>
+      <p>Die Merkmalsliste liegt offen im Repository
+        <a href="https://github.com/marco-koerner/phrasenmaeher" target="_blank" rel="noopener">marco-koerner/phrasenmaeher</a>
+        und wächst mit jedem Fund. Diese Seite liest sie beim Laden ein und zählt: Floskeln und Wendungen wörtlich,
+        Muster als reguläre Ausdrücke, dazu Gedankenstriche je 1000 Wörter, Apostrophe, Vorsätze mit Doppelpunkt,
+        Dreier-Stakkato, Anaphern, Hook-Zeilen, Schlussfragen und die Streuung der Satzlängen. Der Flesch-Index
+        nach Amstad steht daneben, weil er etwas anderes misst: Lesbarkeit, nicht Glätte. KI-Texte sind oft sehr
+        lesbar und trotzdem leer.</p>
+      <p>Gebaut habe ich den Phrasenmäher für meine eigene Redaktion. Dort läuft er vor jeder Freigabe; Zählbares
+        prüft das Skript, das Lesen und das Streichen übernimmt ein Sprachmodell nach festen Regeln, die
+        Entscheidung bleibt bei mir. Diese Seite zeigt den zählbaren Teil.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<section class="recht">
+  <div class="spalte">
+    <p>Keine Cookies, keine Auswertung, keine Verbindung zu Dritten. Der eingegebene Text bleibt in Ihrem Browser.
+      <a href="../#impressum">Impressum</a> · <a href="../#datenschutz">Datenschutz</a></p>
+  </div>
+</section>
+
+<script src="merkmale.js"></script>
+<script src="phrasenmaeher.js"></script>
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const BEISPIEL = `Die Wahrheit ist: KI verändert die Hochschulkommunikation.
+
+Vor zwei Jahren habe ich zum ersten Mal ein Tool ausprobiert – und war skeptisch. Heute nutze ich es täglich.
+
+Was ich gelernt habe?
+
+✅ Kompetenzen aufbauen ist entscheidend.
+✅ Zeit sparen heißt nicht weniger arbeiten – sondern besser prüfen.
+✅ Leitlinien sind kein Hindernis, sondern ein Game-Changer.
+
+In einer Welt, in der sich alles verändert, brauchen wir mehr als Tools. Wir brauchen Haltung. Wir brauchen Mut. Wir brauchen Austausch.
+
+Es geht nicht darum, Jobs zu ersetzen. Es geht darum, Menschen zu befähigen.
+
+Mein Learning: Wer heute nicht eintaucht, verliert morgen den Anschluss.
+
+Was meint ihr?
+
+#KI #Wissenschaftskommunikation #Hochschule #Innovation`;
+
+  if (window.MERKMALE_STAND) $("stand").textContent = "Merkmalsliste, Stand " + window.MERKMALE_STAND;
+
+  $("beispiel").addEventListener("click", () => { $("text").value = BEISPIEL; pruefen(); });
+  $("pruefen").addEventListener("click", pruefen);
+
+  function kz(wert, label, extra) {
+    return `<div class="kz${extra ? " " + extra : ""}"><b>${esc(wert)}</b><span>${esc(label)}</span></div>`;
+  }
+
+  function pruefen() {
+    const text = $("text").value;
+    if (!text.trim()) { $("ergebnis").classList.remove("sichtbar"); return; }
+    const r = window.Phrasenmaeher.analysiere(text, window.MERKMALE || { Floskeln: [], Wendungen: [], Muster: [] });
+    const k = r.kennzahlen;
+    const dichteText = `Verdachtsdichte ${r.stufe} (${r.dichte.toFixed(1)} gewichtete Indizien je 100 Wörter)`
+      + (k.woerter < 150 ? "; kurzer Text, einzelne Funde zählen mehr als die Stufe" : "");
+    $("kennzahlen").innerHTML =
+      kz(k.woerter, "Wörter") +
+      kz(k.saetze, "Sätze, Ø " + k.satzMittel.toFixed(1) + " Wörter (" + k.satzMin + " bis " + k.satzMax + ")") +
+      kz(k.stricheJe1000.toFixed(1), "Gedankenstriche je 1000 Wörter") +
+      kz(k.flesch === null ? "–" : Math.round(k.flesch), "Flesch-Index (Amstad)" + (k.flesch === null ? "" : ", " + window.Phrasenmaeher.fleschStufe(k.flesch)) + "; Lesbarkeit, nicht Glätte") +
+      kz(dichteText, "Fundstellen: " + r.funde.length, "dichte");
+    $("markiert").innerHTML = window.Phrasenmaeher.markiere(text, r.funde);
+    $("funde").innerHTML = r.funde.length
+      ? r.funde.map((f) => `<li><span class="z">${f.zeile ? "Z. " + f.zeile : "Text"}</span><span><span class="kat">${esc(f.kategorie)} · </span>${esc(f.fund)}</span></li>`).join("")
+      : "<li><span class=\"z\"></span><span>Keine Fundstellen.</span></li>";
+    $("ergebnis").classList.add("sichtbar");
+  }
+})();
+</script>
+</body>
+</html>
