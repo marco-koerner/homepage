@@ -1,7 +1,7 @@
 /* Phrasenmäher, Browserfassung.
    Zählt Merkmale, die einen Text glatt wirken lassen. Der Text verlässt den Browser nicht.
    Quelle der Merkmale: merkmale.js, erzeugt aus merkmale.md im Repo marco-koerner/phrasenmaeher.
-   Kein Urteil über die Herkunft; jedes Merkmal kommt auch in menschlichen Texten vor. */
+   Das Ergebnis sagt nichts über die Herkunft; jedes Merkmal kommt auch in menschlichen Texten vor. */
 
 (function () {
   "use strict";
@@ -20,9 +20,39 @@
     return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 
+  const SATZGRENZE = /(?<=[.!?])\s+(?=[A-ZÄÖÜ„»(\d])/g;
+
   function saetze(text) {
-    const roh = text.replace(/\s+/g, " ").trim().split(/(?<=[.!?])\s+(?=[A-ZÄÖÜ„»(\d])/);
+    const roh = text.replace(/\s+/g, " ").trim().split(SATZGRENZE);
     return roh.filter((s) => s.split(/\s+/).length >= 2);
+  }
+
+  /** Sätze einer Zeile mit Position: [{start, ende, satz}], nur Sätze mit mindestens zwei Wörtern. */
+  function satzSpannen(zeile) {
+    const spannen = [];
+    let start = 0;
+    for (const m of zeile.matchAll(SATZGRENZE)) {
+      spannen.push([start, m.index]);
+      start = m.index + m[0].length;
+    }
+    spannen.push([start, zeile.length]);
+    return spannen.map(([a, b]) => ({ start: a, ende: b, satz: zeile.slice(a, b) }))
+      .filter((s) => s.satz.split(/\s+/).filter(Boolean).length >= 2);
+  }
+
+  /** Wahr, wenn ein Satzteil aus mindestens drei kurzen, durch Komma getrennten Gliedern besteht. */
+  function istReihung(teil) {
+    teil = teil.trim().replace(/[.!?;]+\s*$/, "");
+    let glieder = teil.split(/,\s*/).map((g) => g.trim()).filter(Boolean);
+    if (glieder.length) {
+      const l = glieder[glieder.length - 1];
+      const m = l.match(/\s(?:und|oder|sowie)\s/);
+      const letzte = m ? [l.slice(0, m.index), l.slice(m.index + m[0].length)] : [l];
+      glieder = glieder.slice(0, -1).concat(letzte.map((g) => g.trim()).filter(Boolean));
+    }
+    if (glieder.length < 3) return false;
+    const kurz = glieder.filter((g) => g.split(/\s+/).length <= 4).length;
+    return kurz / glieder.length >= 0.75;
   }
 
   function silben(wort) {
@@ -45,6 +75,57 @@
   const LABEL = /^(?:Stand|Quelle|Hinweis|Beispiel|Foto|Autor|Autorin|Kontakt|Datum|Titel|Tel|Telefon|E-Mail|Mail|Web|Adresse|Betreff|Thema|Name)(?![\p{L}])/u;
   const STRICH = /(?<=\S)[ \t][–—][ \t]|—/g;
   const UEBERGANG = new Set(["doch", "dabei", "gleichzeitig", "dennoch", "zugleich", "allerdings"]);
+
+  // Satzbau: Formen, die ein Sprachmodell auch dann trifft, wenn es die Wortliste kennt
+  const SCHLAGWORT_START = /^[„»(]?(?:Kein|Keine|Keinen|Nur|Ohne|Alles|Nichts|Mehr|Weniger|Statt|Endlich|Einfach)(?![\p{L}])/u;
+  const VERB = /(?<![\p{L}])(?:ist|sind|war|waren|hat|haben|hatte|hatten|wird|werden|wurde|wurden|gibt|geht|kommt|bleibt|kann|können|muss|müssen|soll|sollen|will|wollen|darf|dürfen|mag|lässt|macht|zählt|fehlt|steht|liegt|braucht|hilft|reicht|genügt|gilt|heißt|bedeutet|zeigt|folgt|passt|stimmt|funktioniert|dazu|hier|unten|oben|später|siehe)(?![\p{L}])/iu;
+  const DEFINITION = /^[„»(]?([A-ZÄÖÜ][\p{L}\p{N}_-]+)\s(ist|sind)\s(?:der|die|das|ein|eine|kein|keine|nicht|oft|immer|nie|meist|selten|mehr|weniger)(?![\p{L}])/u;
+  const KEINE_DEFINITION = new Set(["es", "er", "sie", "das", "dies", "dieser", "diese", "dieses", "wer", "was", "hier", "dort", "so", "dann", "damit", "dabei", "darum", "deshalb", "ziel", "zweck", "voraussetzung", "grundlage", "ergebnis", "gegenstand", "ausnahme", "beispiel", "folge", "anlass", "stand", "quelle", "thema", "termin", "ort", "zeit", "kontakt", "veranstalter", "herausgeber", "ansprechpartner", "ansprechpartnerin", "maßgeblich", "wichtig", "entscheidend", "neu", "offen", "unklar", "klar"]);
+  const AUFTAKT = /(?:^|[,;:]\s*)(\p{L}{2,})\s[^,;:.!?]*,\s*\1\s[^,;:.!?]*,\s*\1\s/iu;
+
+  function satzbau(zeilen, fund) {
+    zeilen.forEach((z, i) => {
+      if (LISTE.test(z) || z.trimStart().startsWith("#")) return;
+      for (const { start: a, ende: b, satz: s } of satzSpannen(z)) {
+        const n = s.split(/\s+/).filter(Boolean).length;
+        const m = s.match(/^(.{0,80}?):\s+(\S.*)$/);
+        if (m && m[1].split(/\s+/).filter(Boolean).length <= 12 && !LABEL.test(m[1].trim()) && istReihung(m[2])) {
+          fund(i + 1, "Satzbau", "Doppelpunkt-Aufzählung (Reihung statt Satz)", a + m[1].length, b, s);
+        }
+        const t = s.match(AUFTAKT);
+        if (t) {
+          const w = t[1];
+          fund(i + 1, "Satzbau", `Dreierreihe mit gleichem Auftakt („${w} …, ${w.toLowerCase()} …, ${w.toLowerCase()} …“)`, a + t.index + t[0].indexOf(w), b, s);
+        }
+        if (n >= 2 && n <= 6 && SCHLAGWORT_START.test(s) && !VERB.test(s)) {
+          fund(i + 1, "Satzbau", "Schlagwortsatz ohne Verb", a, b, s);
+        }
+        const d = s.match(DEFINITION);
+        if (d && !KEINE_DEFINITION.has(d[1].toLowerCase())) {
+          fund(i + 1, "Satzbau", `Definitionssatz („${d[1]} ${d[2]} …“), Beleg?`, a, b, s);
+        }
+      }
+    });
+  }
+
+  function pointen(text, zeilen, fund) {
+    let zeilennr = 0;
+    for (const absatz of text.split(/(\n\s*\n)/)) {
+      const nZeilen = (absatz.match(/\n/g) || []).length;
+      if (!absatz.trim() || LISTE.test(absatz) || absatz.trimStart().startsWith("#")) { zeilennr += nZeilen; continue; }
+      const letzteZeile = zeilennr + (absatz.replace(/\n+$/, "").match(/\n/g) || []).length + 1;
+      const alle = saetze(absatz);
+      const letzter = alle[alle.length - 1] || "";
+      if (alle.length >= 2 && letzter.split(/\s+/).length <= 6 && /[.!]$/.test(letzter.trimEnd())
+          && alle.slice(0, -1).some((s) => s.split(/\s+/).length >= 12)) {
+        const z = zeilen[letzteZeile - 1];
+        const sp = satzSpannen(z);
+        const s = sp.length ? sp[sp.length - 1] : { start: 0, ende: z.length };
+        fund(letzteZeile, "Satzbau", "Pointe am Absatzende (kurzer Schlusssatz nach langem)", s.start, s.ende, letzter);
+      }
+      zeilennr += nZeilen;
+    }
+  }
 
   /** Analysiert den Text. Liefert { funde, kennzahlen, dichte, stufe }.
    *  funde: { zeile (1-basiert, 0 = ganzer Text), kategorie, fund, start, ende, kontext } */
@@ -82,9 +163,16 @@
       const folgende = zeilen.slice(i + 1).find((x) => x.trim()) || "";
       if (m[2].trim() === "" && (LISTE.test(folgende) || !folgende)) return;
       if (LABEL.test(m[1])) return;
+      const sp = satzSpannen(t);
+      const ersterSatz = sp.length ? sp[0].satz : t;
+      if (istReihung(ersterSatz.slice(m[1].length + 1))) return; // zählt als Doppelpunkt-Aufzählung (Satzbau)
       const start = z.indexOf(m[1]);
       fund(i + 1, "Muster", "Vorsatz mit Doppelpunkt (streichbar?)", start, start + m[1].length + 1, z);
     });
+
+    // Satzbau
+    satzbau(zeilen, fund);
+    pointen(text, zeilen, fund);
 
     // Typografie
     zeilen.forEach((z, i) => {
@@ -151,7 +239,15 @@
     const flesch = wortlich.length && alle.length
       ? 180 - wortlich.length / alle.length - 58.5 * mittel(wortlich.map(silben))
       : null;
-    const gewichtet = funde.reduce((a, f) => a + (f.kategorie === "Typografie" ? 0.5 : 1), 0);
+    // Typografie wie im Skript einmal je Zeile und Merkmal zählen, auch wenn jede Stelle markiert wird
+    const gesehen = new Set();
+    const gewichtet = funde.reduce((a, f) => {
+      if (f.kategorie !== "Typografie") return a + 1;
+      const k = f.zeile + "|" + f.fund;
+      if (gesehen.has(k)) return a;
+      gesehen.add(k);
+      return a + 0.5;
+    }, 0);
     const dichte = (gewichtet * 100) / nW;
     const stufe = dichte < 2 ? "gering" : dichte < 6 ? "mittel" : "hoch";
 

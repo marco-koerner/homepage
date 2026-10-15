@@ -4,10 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Phrasenmäher – Dr. Marco Körner</title>
-<meta name="description" content="Der Phrasenmäher markiert, was einen Text glatt wirken lässt: Floskeln, Wendungen, Muster, Rhythmus. Läuft im Browser, der Text wird nicht übertragen.">
+<meta name="description" content="Ein Skript sucht in einem Text nach Floskeln, Wendungen und Satzformen aus einer offenen Liste und zeigt jede Fundstelle. Es läuft im Browser, der Text verlässt ihn nicht.">
 <meta name="robots" content="index, follow">
 
-<style>
 <style>
 /* ── Schrift: IBM Plex Sans, selbst gehostet ─────────────────
    Dateien im Ordner /fonts/ ablegen. Bezug:
@@ -47,6 +46,7 @@
   --m-muster:#D7C8F5;
   --m-typografie:#CFE6FF;
   --m-absatzbau:#D9EFD3;
+  --m-satzbau:#F5D5E8;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -96,6 +96,9 @@ mark{padding:1px 2px;border-radius:2px;color:inherit;}
 .k-muster{background:var(--m-muster);}
 .k-typografie{background:var(--m-typografie);}
 .k-absatzbau{background:var(--m-absatzbau);}
+.k-satzbau{background:var(--m-satzbau);}
+.fragen{margin:12px 0 0 1.4em;}
+.fragen li{margin-top:6px;}
 .legende{display:flex;flex-wrap:wrap;gap:8px 16px;margin:10px 0 24px;font-size:14px;color:var(--text-leise);}
 .legende i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px;}
 .funde{list-style:none;}
@@ -123,8 +126,8 @@ h3{font-size:15px;font-weight:600;margin:28px 0 10px;}
   <div class="spalte">
     <p class="kopf-name"><a href="../">Dr. Marco Körner</a></p>
     <h1 class="kopf-claim">Phrasenmäher.</h1>
-    <p class="kopf-sub">Markiert, was einen Text glatt wirken lässt: Floskeln, Wendungen, Muster, Rhythmus.
-      Läuft hier im Browser; der Text wird nirgendwohin übertragen.</p>
+    <p class="kopf-sub">Ein Skript sucht in einem Text nach Wörtern, Wendungen und Satzformen aus einer offenen Liste
+      und zeigt jede Fundstelle. Es läuft in diesem Browser, der Text verlässt ihn nicht.</p>
   </div>
 </header>
 
@@ -149,34 +152,61 @@ h3{font-size:15px;font-weight:600;margin:28px 0 10px;}
         <span><i style="background:var(--m-muster)"></i>Muster</span>
         <span><i style="background:var(--m-typografie)"></i>Typografie</span>
         <span><i style="background:var(--m-absatzbau)"></i>Absatzbau</span>
+        <span><i style="background:var(--m-satzbau)"></i>Satzbau</span>
       </div>
       <div class="markiert" id="markiert"></div>
       <h3>Fundstellen</h3>
       <ul class="funde" id="funde"></ul>
-      <p class="hinweis">Kein Urteil über die Herkunft. Jedes Merkmal kommt auch in von Menschen geschriebenen Texten vor,
-        der Gedankenstrich ist korrekte Typografie. Es zählt die Häufung, und ob eine Stelle stehen bleibt, entscheidet,
-        wer den Text geschrieben hat.</p>
+      <p class="hinweis">Das Ergebnis sagt nichts darüber, wer den Text geschrieben hat. Viele Merkmale der Liste sind
+        floskelhaftes Sprechen von Menschen, und der Gedankenstrich ist korrekte Typografie.</p>
     </div>
   </div>
 </section>
 
 <section class="teil">
   <div class="spalte">
-    <h2>Wie es funktioniert</h2>
+    <h2>Was nach dem Klick passiert</h2>
     <div class="fliess">
-      <p>Glätte ist der Eindruck, dass ein Text aus Formeln besteht statt aus Gedanken. Viele halten ihn dann
-        für KI-geschrieben; genauso gut ist es PR-Sprech oder LinkedIn-Routine von Menschen. Der Phrasenmäher
-        unterscheidet das nicht. Er findet die Formeln.</p>
-      <p>Die Merkmalsliste liegt offen im Repository
+      <p>Nach dem Klick auf „Prüfen“ erscheinen die Kennzahlen (Wörter, Sätze, Gedankenstriche je 1000 Wörter,
+        Flesch-Index, Verdachtsdichte), der Text mit farbigen Markierungen und darunter die Fundstellen mit Zeile
+        und Merkmal. Die Verdachtsdichte zählt die Fundstellen je 100 Wörter; Typografie (gerade Anführungszeichen,
+        Apostrophe, gehäufte Gedankenstriche) zählt halb. Unter 2 gilt als gering, bis 6 als mittel, darüber als
+        hoch. Hoch heißt, dass viele Stellen zu entscheiden sind, nicht, dass der Text schlecht oder von einem
+        Modell geschrieben ist. Die Grenzen habe ich an zwei Texten gesetzt und noch nicht weiter geeicht: Ein
+        LinkedIn-Post im KI-Stil, den ich für diese Seite erfunden habe (Knopf „Beispiel einfügen“), kommt auf 18;
+        rund 1000 Wörter eigener Antworten und Kommentare in sozialen Netzwerken bleiben unter 1. Unter 150 Wörtern
+        verschiebt eine einzelne Fundstelle die Dichte um mehr als einen halben Punkt, dort zählt jede Fundstelle
+        für sich. Der Flesch-Index nach Amstad steht daneben; er misst Satzlänge und Wortlänge, also Lesbarkeit,
+        und geht nicht in die Dichte ein. Nach der Skala von Toni Amstad (1978) gelten Werte über 60 als leicht und
+        unter 30 als sehr schwer lesbar.</p>
+      <p>Gesucht wird nach der Liste im Repository
         <a href="https://github.com/marco-koerner/phrasenmaeher" target="_blank" rel="noopener">marco-koerner/phrasenmaeher</a>
-        und wächst mit jedem Fund. Diese Seite liest sie beim Laden ein und zählt: Floskeln und Wendungen wörtlich,
-        Muster als reguläre Ausdrücke, dazu Gedankenstriche je 1000 Wörter, Apostrophe, Vorsätze mit Doppelpunkt,
-        Dreier-Stakkato, Anaphern, Hook-Zeilen, Schlussfragen und die Streuung der Satzlängen. Der Flesch-Index
-        nach Amstad steht daneben, weil er etwas anderes misst: Lesbarkeit, nicht Glätte. KI-Texte sind oft sehr
-        lesbar und trotzdem leer.</p>
-      <p>Gebaut habe ich den Phrasenmäher für meine eigene Redaktion. Dort läuft er vor jeder Freigabe; Zählbares
-        prüft das Skript, das Lesen und das Streichen übernimmt ein Sprachmodell nach festen Regeln, die
-        Entscheidung bleibt bei mir. Diese Seite zeigt den zählbaren Teil.</p>
+        auf GitHub. Sie enthält Wörter wie „innovativ“ und „bahnbrechend“, Wendungen wie „in einer Welt, in der“,
+        Muster wie die Schlussfrage an die Leserschaft und Satzformen wie die Aufzählung hinter einem Doppelpunkt
+        oder die Pointe am Absatzende. Jörg Heeren, Referent für Wissenschaftskommunikation an der Universität
+        Bielefeld, hat einige dieser Merkmale in Folge 19 des Podcasts „Inside HKomm“ genannt; die übrigen stammen
+        aus meiner Arbeit in der Hochschulkommunikation. Die Liste ist öffentlich, und neue Einträge nennen Datum
+        und Anlass.</p>
+      <p>Die <a href="https://github.com/marco-koerner/homepage/blob/8ebbf6d9e31e49b3708e73daf717a8892c88eb4c/phrasenmaeher/index.html" target="_blank" rel="noopener">erste Fassung dieses Textes</a>
+        hat das Sprachmodell geschrieben, mit dem ich den Phrasenmäher gebaut habe und das die Liste deshalb
+        kannte. Sie kam am 15. Oktober 2026 ohne eine Fundstelle durch das Skript. Beim Lesen fand ich drei
+        Stellen, die das Skript nicht sieht: eine Definition von „Glätte“ ohne Quelle, Schlagwörter hinter einem
+        Doppelpunkt statt eines Satzes und einen Hinweis darauf, wofür ich das Werkzeug gebaut habe, der beim
+        Prüfen niemandem hilft. Das Modell hatte um die Liste herumgeschrieben, und das Skript merkt das nicht,
+        weil es Formen findet und keine Aussagen.</p>
+      <p>Ob ein Satz etwas behauptet, das der Text nicht belegt, oder etwas sagt, das die Leserin nicht braucht,
+        findet nur, wer liest. Vor der Veröffentlichung eigener Posts lasse ich deshalb ein Sprachmodell jedem
+        Satz fünf Fragen stellen; es bekommt nur den Text, nicht die Liste und nicht den Entwurf davor, weil der
+        Verfasser eines Satzes die Rechtfertigung dafür schon im Kopf hat. Auf dieser Seite läuft nur das Skript,
+        weil sie keine Verbindung zu einem Server aufbaut. Die fünf Fragen können Sie selbst stellen, am besten
+        zu jedem Satz:</p>
+      <ol class="fragen">
+        <li>Ist das ein Satz mit einer Aussage, oder eine Reihung, ein Fragment, ein Schlagwort?</li>
+        <li>Woher stammt die Behauptung? Steht im Text ein Beleg, ein Beispiel, ein Erlebnis, eine Quelle?</li>
+        <li>Wen interessiert das? Was wissen Sie nach dem Satz, was Sie vorher nicht wussten?</li>
+        <li>Sagt der Satz etwas Neues, oder wiederholt er einen Satz davor?</li>
+        <li>Könnte der Satz unverändert in einem Text zu einem anderen Thema stehen?</li>
+      </ol>
     </div>
   </div>
 </section>
@@ -185,7 +215,7 @@ h3{font-size:15px;font-weight:600;margin:28px 0 10px;}
 
 <section class="recht">
   <div class="spalte">
-    <p>Keine Cookies, keine Auswertung, keine Verbindung zu Dritten. Der eingegebene Text bleibt in Ihrem Browser.
+    <p>Diese Seite setzt keine Cookies und lädt nichts von fremden Servern.
       <a href="../#impressum">Impressum</a> · <a href="../#datenschutz">Datenschutz</a></p>
   </div>
 </section>
